@@ -1,4 +1,5 @@
-import git from 'gulp-git';
+import {exec} from 'child_process';
+
 import {isString} from '../common/util';
 
 export {isClean};
@@ -7,14 +8,10 @@ export {isClean};
  * Asynchrounously determines if the staging area is clean
  */
 function isClean(repoPath, done) {
-  git.exec({cwd:repoPath, args: '--no-pager diff --cached --name-only', quiet: true}, function (err, stdout) {
-    let stagingIsClean;
-    if(stdout && isString(stdout) && stdout.trim().length>0)
-    {
-      stagingIsClean = false;
-    } else {
-      stagingIsClean = true;
-    }
+  exec('git diff --no-pager --cached --name-only', {
+    maxBuffer: Infinity
+  }, function(error, stdout) {
+    let stagingIsClean = stdout && isString(stdout) && stdout.trim().length > 0;
     done(stagingIsClean);
   });
 }

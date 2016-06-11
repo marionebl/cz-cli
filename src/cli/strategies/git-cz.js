@@ -55,12 +55,20 @@ function gitCz(rawGitArgs, environment, adapterConfig) {
       let adapterPackageJson = getParsedPackageJsonFromPath(resolvedAdapterRootPath);
       let cliPackageJson = getParsedPackageJsonFromPath(environment.cliPath);
       console.log(`cz-cli@${cliPackageJson.version}, ${adapterPackageJson.name}@${adapterPackageJson.version}\n`);
-      commit(sh, inquirer, process.cwd(), prompter, {args: parsedGitCzArgs, disableAppendPaths:true, emitData:true, quiet:false, retryLastCommit}, function() {
+      commit(sh, inquirer, process.cwd(), prompter, {
+        args: parsedGitCzArgs,
+        disableAppendPaths:true,
+        emitData:true,
+        quiet:false,
+        retryLastCommit
+      }, function(error) {
+        if (error) {
+          throw error;
+        }
         // console.log('commit happened');
       });
       
     }
   });
-  
 
 }
