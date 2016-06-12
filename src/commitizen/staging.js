@@ -1,17 +1,19 @@
 import {exec} from 'child_process';
 
-import {isString} from '../common/util';
-
 export {isClean};
 
 /**
  * Asynchrounously determines if the staging area is clean
  */
 function isClean(repoPath, done) {
-  exec('git diff --no-pager --cached --name-only', {
-    maxBuffer: Infinity
+  exec('git diff --cached --name-only', {
+    maxBuffer: Infinity,
+    cwd: repoPath || process.cwd()
   }, function(error, stdout) {
-    let stagingIsClean = stdout && isString(stdout) && stdout.trim().length > 0;
-    done(stagingIsClean);
+    if (error) {
+      return done(error);
+    }
+    let output = stdout || '';
+    done(null, output.trim().length === 0);
   });
 }

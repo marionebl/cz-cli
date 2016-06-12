@@ -47,28 +47,32 @@ function gitCz(rawGitArgs, environment, adapterConfig) {
   let resolvedAdapterRootPath = findRoot(resolvedAdapterConfigPath);
   let prompter = getPrompter(adapterConfig.path);
 
-  isClean(process.cwd(), function(stagingIsClean){
-    if(stagingIsClean) {
-      console.error('Error: No files added to staging! Did you forget to run git add?')
-    } else {
-      // OH GOD IM SORRY FOR THIS SECTION
-      let adapterPackageJson = getParsedPackageJsonFromPath(resolvedAdapterRootPath);
-      let cliPackageJson = getParsedPackageJsonFromPath(environment.cliPath);
-      console.log(`cz-cli@${cliPackageJson.version}, ${adapterPackageJson.name}@${adapterPackageJson.version}\n`);
-      commit(sh, inquirer, process.cwd(), prompter, {
-        args: parsedGitCzArgs,
-        disableAppendPaths:true,
-        emitData:true,
-        quiet:false,
-        retryLastCommit
-      }, function(error) {
-        if (error) {
-          throw error;
-        }
-        // console.log('commit happened');
-      });
-      
+  isClean(process.cwd(), function(error, stagingIsClean){
+    if (error) {
+      throw error;
     }
+
+    if(stagingIsClean) {
+      let cleanError = new Error('Error: No files added to staging! Did you forget to run git add?');
+      throw cleanError;
+    }
+
+    // OH GOD IM SORRY FOR THIS SECTION
+    let adapterPackageJson = getParsedPackageJsonFromPath(resolvedAdapterRootPath);
+    let cliPackageJson = getParsedPackageJsonFromPath(environment.cliPath);
+    console.log(`cz-cli@${cliPackageJson.version}, ${adapterPackageJson.name}@${adapterPackageJson.version}\n`);
+    commit(sh, inquirer, process.cwd(), prompter, {
+      args: parsedGitCzArgs,
+      disableAppendPaths:true,
+      emitData:true,
+      quiet:false,
+      retryLastCommit
+    }, function(error) {
+      if (error) {
+        throw error;
+      }
+      // console.log('commit happened');
+    });
   });
 
 }
