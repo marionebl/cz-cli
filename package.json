@@ -1,6 +1,6 @@
 {
-  "name": "commitizen",
-  "version": "0.0.0-semantically-released",
+  "name": "@marionebl/git-cz",
+  "version": "2.8.2",
   "description": "Git commit, but play nice with conventions.",
   "main": "src/index.js",
   "scripts": {
