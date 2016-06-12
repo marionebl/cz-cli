@@ -78,6 +78,7 @@ function getNearestNodeModulesDirectory(options) {
   let nodeModulesDirectories = findNodeModules(options);
   
    // Make sure we find a node_modules folder
+  /* istanbul ignore else */
   if(nodeModulesDirectories && nodeModulesDirectories.length > 0) {
     return nodeModulesDirectories[0];
   } else {
@@ -112,7 +113,8 @@ function getPrompter(adapterPath) {
 
   // Load the adapter
   let adapter = require(resolvedAdapterPath);
-  
+
+  /* istanbul ignore else */
   if(adapter && adapter.prompter && isFunction(adapter.prompter)) {
      return adapter.prompter;
   } else {

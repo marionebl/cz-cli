@@ -7,6 +7,7 @@ import {isString} from '../common/util';
 export { commit };
 
 function onData(data) {
+  /* istanbul ignore if */
   if (isString(data)) {
     process.stdout.write(data);
   }
@@ -36,6 +37,7 @@ function commit(sh, repoPath, message, options, done) {
   let childProcess = exec(`git commit -m "${commitMessage}" ${args}`, {
     maxBuffer: Infinity
   }, function(error, stdout, stderror) {
+    /* istanbul ignore if */
     if (error) {
       console.error(error);
       return done(error);
@@ -43,6 +45,7 @@ function commit(sh, repoPath, message, options, done) {
     done();
   });
 
+  /* istanbul ignore if */
   if (options.quiet === false) {
     childProcess.stdout.on('data', onData);
     childProcess.stderr.on('data', onData);
