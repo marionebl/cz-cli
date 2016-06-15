@@ -18,13 +18,11 @@ function normalizeCommitMessage(message) {
   let escapedMessage = dedentedMessage.replace(/"/g, '\\"');
   let operatingSystemNormalizedMessage;
 
-  if(os.platform() == "win32") {
-    operatingSystemNormalizedMessage = escapedMessage.split(/\r?\n/);
-  } else {
-    operatingSystemNormalizedMessage = escapedMessage.replace(/`/g, '\\`');
+  if(os.platform() !== "win32") {
+    return escapedMessage.replace(/`/g, '\\`');
   }
 
-  return operatingSystemNormalizedMessage;
+  return escapedMessage;
 }
 
 /**
@@ -35,7 +33,8 @@ function commit(sh, repoPath, message, options, done) {
   let commitMessage = normalizeCommitMessage(message);
 
   let childProcess = exec(`git commit -m "${commitMessage}" ${args}`, {
-    maxBuffer: Infinity
+    maxBuffer: Infinity,
+    cwd: repoPath
   }, function(error, stdout, stderror) {
     /* istanbul ignore if */
     if (error) {

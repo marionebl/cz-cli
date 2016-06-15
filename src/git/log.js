@@ -7,7 +7,8 @@ export { log };
  */
 function log(repoPath, done) {
   exec('git log', {
-    maxBuffer: Infinity
+    maxBuffer: Infinity,
+    cwd: repoPath
   }, function(error, stdout, stderr) {
     if (error) {
       done();
