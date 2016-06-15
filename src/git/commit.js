@@ -14,15 +14,15 @@ function onData(data) {
 }
 
 function normalizeCommitMessage(message) {
-  let dedentedMessage = dedent(message);
-  let escapedMessage = dedentedMessage.replace(/"/g, '\\"');
-  let operatingSystemNormalizedMessage;
+  const signs = os.platform() === 'win32' ?
+    /(")/g :
+    /(["|`])/g;
 
-  if(os.platform() !== "win32") {
-    return escapedMessage.replace(/`/g, '\\`');
-  }
-
-  return escapedMessage;
+  return dedent(message)
+    .replace(signs, '\\$1')
+    .split(/\r?\n/)
+    .map(line => `-m "${line}"`)
+    .join(' ');
 }
 
 /**
@@ -32,7 +32,7 @@ function commit(sh, repoPath, message, options, done) {
   let args = options.args || '';
   let commitMessage = normalizeCommitMessage(message);
 
-  let childProcess = exec(`git commit -m "${commitMessage}" ${args}`, {
+  let childProcess = exec(`git commit ${commitMessage} ${args}`, {
     maxBuffer: Infinity,
     cwd: repoPath
   }, function(error, stdout, stderror) {
